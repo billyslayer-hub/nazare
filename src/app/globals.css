@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-950: #050d1c;
+  --color-ink-900: #0a1730;
+  --color-ink-800: #12224a;
+  --color-ink-700: #1f3266;
+  --color-ink-600: #34497f;
+
+  --color-wave-50: #ecfdf9;
+  --color-wave-100: #d0f8ef;
+  --color-wave-200: #a4f0e0;
+  --color-wave-300: #6ce2cd;
+  --color-wave-400: #33cab4;
+  --color-wave-500: #14ae9b;
+  --color-wave-600: #0b8c7f;
+  --color-wave-700: #0d7067;
+  --color-wave-800: #105953;
+
+  --color-surface: #f6f8fb;
+  --color-line: #e4e8ef;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-surface);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-wave-200);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #eef1f6;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.toast-in {
+  animation: toast-in 180ms ease-out;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.fade-up {
+  animation: fade-up 260ms ease-out both;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
