@@ -1,9 +1,9 @@
-import type { Asset, Followups, Profile, SectionData, SectionKey, StudioRequest } from "./schemas";
+import type { Followups, Profile, SectionData, SectionKey } from "./schemas";
 
 /**
  * Demo mode: used only when no Anthropic credentials are configured.
  * Content is templated from the founder's profile so every screen can be
- * explored, and the UI labels it "Sample content" everywhere it appears.
+ * explored, and the UI labels it a "Template draft" everywhere it appears.
  * It contains no real market data, no named competitors and no sources.
  */
 
@@ -18,12 +18,15 @@ export function demoName(p: Profile) {
   return w.charAt(0).toUpperCase() + w.slice(1, 7) + ["ly", "hub", "wise", "nest", "co"][w.length % 5];
 }
 
+/** Lowercases the first letter unless the phrase starts with an acronym or proper noun like "NYC". */
+const lowerFirst = (t: string) => (/^[A-Z][a-z]/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+
 function c(p: Profile) {
   return {
     name: demoName(p),
-    audience: p.audience || "early adopters in your niche",
+    audience: lowerFirst(p.audience || "early adopters in your niche"),
     industry: p.industry || "your industry",
-    location: p.location || "your launch market",
+    location: !p.location ? "your launch market" : /^(local|the|a|an|my|our|your)\b/i.test(p.location) ? `the ${p.location.replace(/^(the|a|an)\s+/i, "").toLowerCase()}` : p.location,
     offering: p.offering || p.idea.split(/[.!?]/)[0],
   };
 }
@@ -46,8 +49,8 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
       vision: `Become the go-to choice for ${x.audience} in ${x.location}, then expand to adjacent markets.`,
       overview: `${x.name} offers ${x.offering.charAt(0).toLowerCase() + x.offering.slice(1)} for ${x.audience}. It starts lean in ${x.location}, proves demand with a small group of paying customers, then grows through referrals and partnerships.`,
       offerings: [
-        { name: "Core offer", description: x.offering, pricing: p.pricing || "Sample: 39 per month" },
-        { name: "Premium package", description: "Done-for-you setup and priority support", pricing: "Sample: 249 one-time" },
+        { name: "Core offer", description: x.offering, pricing: p.pricing || "39 per month (example — set your own)" },
+        { name: "Premium package", description: "Done-for-you setup and priority support", pricing: "249 one-time (example)" },
       ],
       customerProblem: `${x.audience} rely on fragmented, manual or expensive options that were not designed for them.`,
       uniqueValueProposition: `Built specifically for ${x.audience}: simpler, faster to start, and priced for small budgets.`,
@@ -70,7 +73,7 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
   market: (p) => {
     const x = c(p);
     return {
-      industryOverview: `Sample content. The ${x.industry} market should be researched with live sources before decisions are made. This section shows the structure the analysis will follow.`,
+      industryOverview: `Template draft: research the ${x.industry} market with real sources before making big decisions. Log what you find on the Research page, or add an AI key for a full analysis.`,
       segments: [
         { name: x.audience, priority: "primary", description: "The first group to target — most pain, easiest to reach.", needs: ["Save time", "Predictable cost"], painPoints: ["Current options are complex", "Hard to see results"] },
         { name: "Small teams and businesses", priority: "secondary", description: "Buyers with a shared budget and more complex needs.", needs: ["Collaboration", "Reporting"], painPoints: ["Coordination overhead"] },
@@ -80,7 +83,7 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
         { hypothesis: "Word-of-mouth can drive a large share of early signups", evidence: "hypothesis", howToValidate: "Track referral source on every signup" },
       ],
       marketSize: {
-        approach: "Sample only. Real sizing multiplies the number of reachable customers by realistic annual spend, using cited data from the Research workspace.",
+        approach: "Not estimated offline. Real sizing multiplies the number of reachable customers by realistic annual spend, using cited data from the Research workspace.",
         tam: { value: 0, label: "Not estimated in demo mode" },
         sam: { value: 0, label: "Not estimated in demo mode" },
         som: { value: 0, label: "Not estimated in demo mode" },
@@ -94,7 +97,7 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
     };
   },
   competition: () => ({
-    landscape: "Sample content. Competitors below are illustrative categories, not real companies. Use the Research workspace to identify actual competitors.",
+    landscape: "Template draft: these are types of competitors, not specific companies. Visit or search for real local competitors and note their prices on the Research page.",
     competitors: [
       { name: "Established all-in-one providers", category: "direct", isNamedCompany: false, positioning: "Broad feature set for larger customers", pricing: "Unknown — verify", strengths: ["Brand trust", "Breadth"], weaknesses: ["Complex", "Costly for small buyers"] },
       { name: "Niche specialists", category: "direct", isNamedCompany: false, positioning: "Focused tools for adjacent niches", pricing: "Unknown — verify", strengths: ["Modern experience"], weaknesses: ["Not tailored to this audience"] },
@@ -114,11 +117,10 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
     marketGaps: ["No option designed specifically for this audience", "Affordable support for beginners"],
     differentiation: ["Own one narrow niche deeply before broadening", "Make onboarding take minutes, not days"],
   }),
-  execution: (p) => {
-    const x = c(p);
+  execution: () => {
     return {
       setupRequirements: [
-        { item: "Register the business", details: `Choose a structure and register in ${x.location}.`, needsProfessionalAdvice: true },
+        { item: "Register the business", details: "Choose a structure and register with your local government office.", needsProfessionalAdvice: true },
         { item: "Business bank account", details: "Keep business and personal money separate.", needsProfessionalAdvice: false },
         { item: "Licenses, permits and insurance", details: "Requirements depend on industry and location.", needsProfessionalAdvice: true },
       ],
@@ -143,10 +145,10 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
         { title: "Run a waitlist landing page test", description: "Measure visitor-to-signup conversion.", stage: "Research the market", priority: "high", week: 2, dependsOn: ["Interview 15 potential customers"] },
         { title: "Define the MVP scope", description: "Choose must-have features from interview insights.", stage: "Develop the offering", priority: "high", week: 3, dependsOn: ["Interview 15 potential customers"] },
         { title: "Build the MVP", description: "Ship the smallest usable version.", stage: "Develop the offering", priority: "high", week: 5, dependsOn: ["Define the MVP scope"] },
-        { title: "Register the business", description: `Register in ${x.location}; ask an accountant about the right structure.`, stage: "Establish the business", priority: "medium", week: 3, dependsOn: [] },
+        { title: "Register the business", description: "Register with your local government office; ask an accountant or teacher about the right structure.", stage: "Establish the business", priority: "medium", week: 3, dependsOn: [] },
         { title: "Open a business bank account", description: "Separate business and personal finances.", stage: "Establish the business", priority: "medium", week: 4, dependsOn: ["Register the business"] },
         { title: "Set up payments", description: "Connect a payment processor and test checkout.", stage: "Establish the business", priority: "medium", week: 5, dependsOn: ["Open a business bank account"] },
-        { title: "Create launch content", description: "Prepare posts, emails and visuals in the Marketing Studio.", stage: "Prepare marketing & sales", priority: "medium", week: 7, dependsOn: [] },
+        { title: "Create launch content", description: "Make posts, emails and ad images in the Ad Creator.", stage: "Prepare marketing & sales", priority: "medium", week: 7, dependsOn: [] },
         { title: "Recruit 5 pilot customers", description: "Offer founder pricing in exchange for feedback.", stage: "Prepare marketing & sales", priority: "high", week: 6, dependsOn: ["Build the MVP"] },
         { title: "Public launch", description: "Announce to the waitlist and partner communities.", stage: "Launch", priority: "high", week: 10, dependsOn: ["Recruit 5 pilot customers", "Set up payments"] },
         { title: "Start a referral offer", description: "Reward customers who bring a friend.", stage: "Launch", priority: "low", week: 11, dependsOn: ["Public launch"] },
@@ -160,7 +162,7 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
     return {
       idealCustomerProfiles: [{ name: x.audience, description: "Actively looking for a better option and able to decide quickly." }],
       personas: [
-        { name: "Sample persona: Alex", age: "28-40", occupation: "Owner-operator", goals: ["Save time", "Grow steadily"], frustrations: ["Tools that need training"], buyingTriggers: ["A bad week with the current solution"], quote: "Illustrative: “I just want something that works on day one.”" },
+        { name: "Alex (example)", age: "28-40", occupation: "Owner-operator", goals: ["Save time", "Grow steadily"], frustrations: ["Tools that need training"], buyingTriggers: ["A bad week with the current solution"], quote: "Illustrative: “I just want something that works on day one.”" },
       ],
       positioning: `For ${x.audience} who are frustrated by complex options, ${x.name} is the simple, affordable choice that delivers results quickly.`,
       messagingPillars: ["Simple from day one", "Built for you", "Fair, transparent pricing"],
@@ -193,57 +195,63 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
       salesProcess: ["Book a short call", "Understand the problem", "Demo the core workflow", "Offer pilot pricing", "Follow up within 48 hours"],
       retention: ["Personal onboarding", "Monthly results summary", "Ask for feedback at day 30"],
       monthlyBudget: 500,
-      budgetRationale: "Sample: a small, testable budget appropriate for an early-stage business.",
+      budgetRationale: "A small, testable budget appropriate for an early-stage business.",
       campaignObjectives: [{ objective: "Build a launch waitlist", kpi: "Signups", target: "200 in 6 weeks" }],
     };
   },
   financials: (p) => {
     const cash = parseCapital(p.capital);
+    // Scale the starter model to the founder's budget and stated price so small and large ideas both look plausible.
+    const scale = Math.min(3, Math.max(0.05, cash / 15000));
+    const priceMatch = /([0-9]+(?:\.[0-9]+)?)/.exec(p.pricing.replace(/,/g, ""));
+    const price = priceMatch ? Number(priceMatch[1]) : 39;
+    const recurring = !p.pricing || /month|\/mo|subscription|membership|weekly|per week/i.test(p.pricing);
+    const volume = recurring ? Math.max(5, Math.round(10 * Math.sqrt(scale))) : price < 10 ? 120 : price < 50 ? 40 : price < 200 ? 12 : 4;
+    const r = (n: number) => Math.max(5, Math.round((n * scale) / 5) * 5);
     return {
-      summary: "Sample model with illustrative assumptions. Edit any number in the Financial workspace to see the projections recalculate.",
+      summary: "Starter model with example numbers sized to your budget. Change any number on the Money page and everything recalculates.",
       assumptions: {
         startingCash: cash,
         revenueStreams: [
-          { name: "Core subscription", kind: "recurring", price: 39, startingVolume: 8, monthlyGrowthPct: 8, churnPct: 5, variableCostPct: 15 },
-          { name: "Premium setup", kind: "transactional", price: 249, startingVolume: 2, monthlyGrowthPct: 5, churnPct: 0, variableCostPct: 30 },
+          recurring
+            ? { name: "Core subscription", kind: "recurring", price, startingVolume: volume, monthlyGrowthPct: 8, churnPct: 5, variableCostPct: 15 }
+            : { name: "Core sales", kind: "transactional", price, startingVolume: volume, monthlyGrowthPct: 5, churnPct: 0, variableCostPct: 35 },
         ],
         startupCosts: [
-          { item: "Registration & legal", cost: 800 },
-          { item: "Website & branding", cost: 1500 },
-          { item: "Initial product build", cost: 3000 },
+          { item: "Registration & permits", cost: r(800) },
+          { item: "Branding & website", cost: r(1500) },
+          { item: "Equipment & first supplies", cost: r(3000) },
         ],
         fixedCosts: [
-          { item: "Software & hosting", monthly: 150, startMonth: 1 },
-          { item: "Accounting & insurance", monthly: 120, startMonth: 1 },
-          { item: "Workspace", monthly: 300, startMonth: 9 },
+          { item: "Software, phone & tools", monthly: r(150), startMonth: 1 },
+          { item: "Insurance & fees", monthly: r(120), startMonth: 1 },
+          ...(cash >= 20000 ? [{ item: "Workspace", monthly: r(300), startMonth: 9 }] : []),
         ],
-        team: [
-          { role: "Founder pay", monthly: 0, startMonth: 1 },
-          { role: "Part-time assistant", monthly: 1200, startMonth: 7 },
-        ],
-        marketingMonthly: 500,
+        team: cash >= 20000 ? [{ role: "Part-time helper", monthly: r(1200), startMonth: 7 }] : [],
+        marketingMonthly: r(500),
         marketingGrowthPct: 3,
       },
       assumptionNotes: [
-        { assumption: "Starting cash", basis: p.capital ? "founder-provided" : "estimate", note: p.capital ? "Based on the capital you entered." : "Assumed modest bootstrapped budget." },
-        { assumption: "Prices and volumes", basis: "hypothesis", note: "Illustrative sample values — replace with your own." },
+        { assumption: "Starting cash", basis: p.capital ? "founder-provided" : "estimate", note: p.capital ? "Based on the budget you entered." : "Assumed a small starting budget." },
+        { assumption: "Price", basis: p.pricing ? "founder-provided" : "estimate", note: p.pricing ? "Taken from the price you entered." : "Example price — set your own." },
+        { assumption: "Sales volume and costs", basis: "hypothesis", note: "Example values sized to your budget — replace them with your own." },
       ],
-      pricingRationale: "Sample: priced below typical all-in-one options to attract early adopters.",
-      unitEconomics: { cac: 60, ltv: 663, notes: "LTV ≈ monthly price × gross margin ÷ monthly churn. Aim for LTV at least 3× CAC." },
+      pricingRationale: p.pricing ? "Uses the price you entered; compare it with what similar sellers charge." : "Example price — check what similar sellers charge before deciding.",
+      unitEconomics: { cac: Math.max(2, Math.round(price * 0.4)), ltv: Math.round(recurring ? (price * 0.85) / 0.05 : price * 0.65 * 3), notes: "LTV ≈ profit per customer over the time they keep buying. Aim for LTV at least 3× CAC." },
       fundingStrategy: {
-        instrument: "Bootstrapped from savings and early revenue",
+        instrument: cash < 5000 ? "Personal savings and early sales" : "Bootstrapped from savings and early revenue",
         useOfFunds: [
-          { category: "Product", pct: 40 },
-          { category: "Marketing", pct: 40 },
-          { category: "Operations & buffer", pct: 20 },
+          { category: "Product & supplies", pct: 50 },
+          { category: "Marketing", pct: 30 },
+          { category: "Buffer", pct: 20 },
         ],
-        rationale: "Sample: keep costs low until demand is proven.",
+        rationale: "Keep costs low until people prove they will buy.",
       },
     };
   },
   risks: () => ({
-    candidAssessment: "Sample content. A real assessment weighs your specific idea; in demo mode this shows the structure. The most common weakness for early ventures is unproven demand — test willingness to pay before building much.",
-    readiness: { score: 40, rationale: "Sample score: demand and pricing are not yet validated." },
+    candidAssessment: "Template draft. The most common weakness for new businesses is unproven demand — before spending much, test whether real customers will pay your price.",
+    readiness: { score: 40, rationale: "Starting score: demand and pricing have not been tested yet." },
     risks: [
       { category: "demand", risk: "Customers like the idea but won't pay", likelihood: "medium", impact: "high", mitigation: "Pre-sell before building" },
       { category: "competitive", risk: "Established players add the same feature", likelihood: "medium", impact: "medium", mitigation: "Own a narrow niche and build relationships" },
@@ -270,7 +278,7 @@ const builders: { [K in SectionKey]: (p: Profile) => SectionData[K] } = {
       revenueModel: "Monthly subscription plus optional premium setup.",
       competitiveAdvantage: "Deep focus on one audience and a faster onboarding experience.",
       keyObjectives: ["Validate demand within 30 days", "Reach 25 paying customers", "Break even"],
-      fundingRequirement: "See the Financial workspace for the computed funding requirement.",
+      fundingRequirement: "See the Money page for the calculated funding requirement.",
       milestones: [
         { milestone: "Problem validated", timeframe: "Week 3" },
         { milestone: "First paying customer", timeframe: "Week 6" },
@@ -294,28 +302,4 @@ export function demoFollowups(p: Profile): Followups {
   if (!p.constraints)
     q.push({ question: "Any constraints we should plan around?", why: "Time, money or location limits change the roadmap.", suggestions: ["Only evenings and weekends", "Must stay under budget", "None"] });
   return { questions: q.slice(0, 4) };
-}
-
-export function demoAsset(p: Profile, r: StudioRequest): Asset {
-  const x = c(p);
-  const variants = Array.from({ length: r.variations }, (_, i) => ({
-    label: `Variant ${String.fromCharCode(65 + i)}`,
-    headline: [`Meet ${x.name}`, `Built for ${x.audience}`, "Less hassle. Better results.", "Your shortcut starts here", "Try it this week"][i % 5],
-    body: `[Sample ${r.assetType.toLowerCase()} for ${r.platform}, ${r.tone.toLowerCase()} tone, goal: ${r.goal.toLowerCase()}.] ${x.offering} — designed for ${r.audience || x.audience}. Connect an AI key to generate real, tailored copy.`,
-    cta: r.goal === "Sales" ? "Shop now" : r.goal === "Leads" ? "Book a call" : "Join the waitlist",
-    hashtags: r.platform === "Instagram" || r.platform === "TikTok" ? ["smallbusiness", "startup"] : [],
-  }));
-  return {
-    title: `${r.assetType} — ${r.platform} (sample)`,
-    strategy: "Sample strategy: lead with the customer's main frustration, then show the simplest path to the outcome.",
-    variants,
-    creativeBrief: {
-      concept: "Before-and-after: the old frustrating way versus the simple new way.",
-      visualDirection: "Bright natural light, real-looking people, brand accent colour on the call to action.",
-      imagePrompt: `Photorealistic image of a ${x.audience.replace(/s$/, "")} smiling while using ${x.name}, clean modern setting, soft natural light, teal accent colour, shallow depth of field`,
-      format: r.platform === "TikTok" ? "9:16 vertical video" : "1080x1350 portrait",
-    },
-    testIdea: "Test a problem-focused headline against an outcome-focused headline; pick the one with the higher click-through rate after 1,000 impressions each.",
-    kpis: ["Click-through rate", "Cost per signup", "Signup conversion rate"],
-  };
 }

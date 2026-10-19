@@ -1,5 +1,5 @@
 import { aiEnabled, generateStructured } from "@/lib/ai";
-import { demoAsset } from "@/lib/demo";
+import { offlineAsset } from "@/lib/offline-ads";
 import { demoDelay, handleError, parseBody } from "@/lib/http";
 import { studioPrompt } from "@/lib/prompts";
 import { assetSchema, studioBodySchema } from "@/lib/schemas";
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   const { profile, context, request: r } = body.data;
   if (!aiEnabled()) {
     await demoDelay();
-    return Response.json({ ok: true, mode: "demo", data: demoAsset(profile, r) });
+    return Response.json({ ok: true, mode: "demo", data: offlineAsset(profile, {}, r) });
   }
   try {
     const data = await generateStructured(assetSchema, studioPrompt(profile, context, r), "medium");

@@ -1,10 +1,10 @@
 /**
  * Brand settings. Change the name here and it updates across the app,
- * page titles and exported documents.
+ * page titles and exported documents. Logo files live in public/brand/.
  */
 export const brand = {
-  name: "Nazaré",
-  tagline: "From idea to launch, with a strategy team in your corner.",
+  name: "Paideia",
+  tagline: "Learn it. Plan it. Launch it.",
   description:
-    "Nazaré turns a business idea into a structured plan, financial model, marketing kit and launch roadmap — in one workspace.",
+    "Paideia turns a business idea into a clear plan, real numbers, ready-to-use ads and a step-by-step launch list — all in one place.",
 };

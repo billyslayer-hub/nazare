@@ -61,10 +61,10 @@ export default function Dashboard() {
           <div className="flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:p-8">
             <div className="flex size-12 items-center justify-center rounded-xl bg-wave-50 text-wave-700"><Sparkles className="size-6" /></div>
             <div className="flex-1">
-              <h2 className="font-display text-lg font-semibold text-slate-900">{generating.length ? "Building your blueprint…" : "Generate your business blueprint"}</h2>
+              <h2 className="font-display text-lg font-semibold text-slate-900">{generating.length ? "Writing your business plan…" : "Create your business plan"}</h2>
               <p className="mt-1 text-sm text-slate-500">{generating.length ? "Your company description comes first, then market, competition, marketing, finance and execution in parallel, then risk and the executive summary. This usually takes a few minutes." : "Eight sections built from your profile. Every section can be edited, regenerated or restored later."}</p>
             </div>
-            <Button size="lg" loading={generating.length > 0} onClick={() => generateBlueprint(project.id)}>{generating.length ? "Generating" : "Generate blueprint"}</Button>
+            <Button size="lg" loading={generating.length > 0} onClick={() => generateBlueprint(project.id)}>{generating.length ? "Writing your plan" : "Create my business plan"}</Button>
           </div>
         </Card>
       )}
@@ -100,7 +100,7 @@ export default function Dashboard() {
           ) : (
             <p className="mt-3 text-sm text-slate-500">Appears once the Financial Plan section is generated. All figures are computed from editable assumptions.</p>
           )}
-          {proj && <p className="mt-3 text-[11px] text-slate-400">Projection from {project.finance?.edited ? "your edited" : "AI-proposed"} assumptions — not a guarantee.</p>}
+          {proj && <p className="mt-3 text-[11px] text-slate-400">Projection from {project.finance?.edited ? "your edited" : project.finance?.basis === "demo" ? "example" : "AI-proposed"} numbers — not a guarantee.</p>}
         </Card>
 
         <Card className="p-5">
@@ -210,7 +210,7 @@ export default function Dashboard() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader icon={<Compass className="size-4" />} title="Blueprint sections" action={<Link href={`${base}/blueprint`} className="text-xs font-medium text-wave-700 hover:underline">Open blueprint</Link>} />
+          <CardHeader icon={<Compass className="size-4" />} title="Business plan sections" action={<Link href={`${base}/blueprint`} className="text-xs font-medium text-wave-700 hover:underline">Open plan</Link>} />
           <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-4">
             {SECTIONS.map((s) => {
               const done = Boolean(project.sections[s.key]);

@@ -113,14 +113,14 @@ export function deleteProject(id: string) {
 /* ------------------------------------------------------------------ */
 
 export function exportProjectJson(project: Project): string {
-  return JSON.stringify({ app: "nazare", exportedAt: now(), project }, null, 2);
+  return JSON.stringify({ app: "paideia", exportedAt: now(), project }, null, 2);
 }
 
 export function importProjectJson(text: string): Project {
   const parsed = JSON.parse(text) as { app?: string; project?: Project };
   const p = parsed.project;
-  if (parsed.app !== "nazare" || !p || typeof p !== "object" || !p.profile?.idea) {
-    throw new Error("This file is not a Nazaré project export.");
+  if (!(parsed.app === "paideia" || parsed.app === "nazare") || !p || typeof p !== "object" || !p.profile?.idea) {
+    throw new Error("This file is not a Paideia project export.");
   }
   const project: Project = {
     ...p,

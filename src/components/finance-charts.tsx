@@ -4,8 +4,8 @@ import type { NameType, ValueType } from "recharts/types/component/DefaultToolti
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from "recharts";
 import { money } from "@/lib/finance";
 
-/* Chart palette — validated reference slots 1-3 (all-pairs CVD-safe). */
-export const SERIES = { blue: "#2a78d6", orange: "#eb6834", aqua: "#1baf7a" };
+/* Chart palette — brand-adjacent, validated all-pairs CVD-safe (gold needs the table view for contrast relief). */
+export const SERIES = { blue: "#2f6fb0", orange: "#b5443f", aqua: "#d99a57" };
 const GRID = "#e9edf3";
 const AXIS = "#64748b";
 

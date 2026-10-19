@@ -28,8 +28,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => {
           const Icon = icons[t.tone];
           return (
-            <div key={t.id} className="toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl bg-ink-900 px-4 py-3 text-sm text-white shadow-xl shadow-ink-900/20">
-              <Icon className={clsx("mt-0.5 size-4 shrink-0", t.tone === "error" ? "text-rose-300" : t.tone === "info" ? "text-sky-300" : "text-wave-300")} />
+            <div key={t.id} className="toast-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl bg-ink-950 px-4 py-3 text-sm text-white shadow-xl shadow-ink-900/20">
+              <Icon className={clsx("mt-0.5 size-4 shrink-0", t.tone === "error" ? "text-rose-300" : t.tone === "info" ? "text-sky-300" : "text-gold-300")} />
               <span className="flex-1 leading-snug">{t.message}</span>
               <button onClick={() => dismiss(t.id)} className="text-white/50 hover:text-white" aria-label="Dismiss">
                 <X className="size-4" />

@@ -1,8 +1,8 @@
-# Nazaré — Entrepreneur Command Center
+# Paideia — From idea to launch
 
-Nazaré turns a business idea, described in plain English, into a structured business: an eight-section blueprint, a live financial model, a marketing studio, a sourced research workspace, a task-based launch roadmap and a context-aware Business Advisor — in one workspace.
+Paideia turns a business idea, described in plain English, into a structured business: an eight-section blueprint, a live financial model, a marketing studio, a sourced research workspace, a task-based launch roadmap and a context-aware Business Advisor — in one workspace.
 
-The brand name lives in `src/config/brand.ts`; change it there and it updates everywhere, including exports.
+The brand name lives in `src/config/brand.ts` and the logo files in `public/brand/`. Brand colors: maroon `#912F30`, forest `#344840`, gold `#D99A57` (tokens in `src/app/globals.css`).
 
 ## Quick start
 
@@ -12,7 +12,19 @@ cp .env.example .env.local   # add ANTHROPIC_API_KEY for real AI output
 npm run dev                  # http://localhost:3000
 ```
 
-Without `ANTHROPIC_API_KEY` the app runs in **demo mode**: every screen works, but blueprint sections and marketing assets are illustrative templates and are labelled "Sample content" everywhere they appear. Live research and the Business Advisor are disabled rather than simulated.
+Without `ANTHROPIC_API_KEY` the app runs in **offline mode**:
+
+- **Advisor** answers from the business's own saved plan, numbers and tasks, plus a plain-language glossary (labelled "Offline advisor").
+- **Ad Creator** writes platform-aware copy from the business details using built-in ad templates and renders downloadable ad images (labelled "Template copy").
+- **Money, Tasks, exports** are fully functional (they never needed AI).
+- **Business plan sections** are template drafts built from your answers (labelled "Template draft").
+- **Live research** is turned off rather than simulated; the research framework and manual finding log still work.
+
+### For a class demo
+
+1. Add an API key (see below) — about $5 of credit covers building and rehearsing.
+2. Before class, create the business you'll present so its plan is already generated.
+3. During the demo, use **Try an example** or your saved business, then show Money (change the price live), Ad Creator (create and download an ad), Tasks, and ask the Advisor a question.
 
 Other scripts: `npm run build`, `npm start`, `npm run lint`, `npm run typecheck`.
 
@@ -21,9 +33,11 @@ Other scripts: `npm run build`, `npm start`, `npm run lint`, `npm run typecheck`
 | Variable | Required | Purpose |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | For AI features | Blueprint generation, follow-up questions, marketing studio, live web research, Business Advisor |
-| `NAZARE_MODEL` | No | Claude model ID (default `claude-opus-5-5`) |
-| `NAZARE_WEB_RESEARCH` | No | Set `off` to disable web research |
-| `NAZARE_RATE_LIMIT_PER_MIN` | No | Per-IP limit on AI routes (default 30) |
+| `PAIDEIA_MODEL` | No | Claude model ID. Default `claude-sonnet-5-5` (fast, roughly $0.30–0.80 per full plan); `claude-haiku-5-5` costs a few cents per plan; `claude-opus-5-5` is highest quality (~$1–3) |
+| `PAIDEIA_WEB_RESEARCH` | No | Set `off` to disable web research |
+| `PAIDEIA_RATE_LIMIT_PER_MIN` | No | Per-IP limit on AI routes (default 150) |
+
+Cost figures are rough estimates; set a monthly spend limit in the Anthropic console.
 
 The key is only read on the server (`src/lib/ai.ts`, marked `server-only`); it never reaches the browser.
 
@@ -47,7 +61,7 @@ src/
   app/                    Next.js App Router pages and API routes
     api/ai/*              section, followups, studio, research, advisor (server-only AI calls)
     b/[id]/*              workspace: dashboard, blueprint, research, financials, marketing, roadmap, profile, plan
-  components/             UI kit, workspace shell, section renderers, schema-driven editor, charts, advisor
+  components/             UI kit, workspace shell, section renderers, schema-driven editor, charts, advisor, ad image preview
   config/brand.ts         product name and copy
   lib/
     schemas.ts            zod schemas: profile, all sections, assets, research, API bodies
@@ -57,7 +71,9 @@ src/
     finance.ts            deterministic projection engine and calculators
     project.ts            domain logic: versions, task sync, recommendations, AI context digest
     store.ts              data access layer (localStorage)
-    demo.ts               labelled sample content for demo mode
+    demo.ts               offline template drafts for plan sections
+    offline-advisor.ts    offline Advisor answers from saved plan data + glossary
+    offline-ads.ts        offline ad/content copywriting templates
 ```
 
 AI calls use streaming, structured outputs validated with zod on the server, adaptive thinking with per-route effort, typed error handling, and server-side refusal fallbacks (`fallbacks: "default"`).

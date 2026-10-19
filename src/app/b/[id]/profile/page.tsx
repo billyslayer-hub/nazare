@@ -50,7 +50,7 @@ export default function ProfilePage() {
       {saved && !dirty && hasSections && (
         <div className="mb-4 flex flex-col gap-3 rounded-xl border border-wave-200 bg-wave-50 px-4 py-3 text-sm text-wave-900 sm:flex-row sm:items-center">
           <span className="flex-1">Existing sections were written with your previous profile. Regenerate to apply your changes — earlier versions stay in each section&apos;s history.</span>
-          <Button size="sm" variant="secondary" onClick={() => setConfirmRegen(true)}><RefreshCw className="size-3.5" />Regenerate blueprint</Button>
+          <Button size="sm" variant="secondary" onClick={() => setConfirmRegen(true)}><RefreshCw className="size-3.5" />Rewrite plan</Button>
         </div>
       )}
 
@@ -109,14 +109,14 @@ export default function ProfilePage() {
           <Card>
             <CardHeader title="Your data" description="Stored only in this browser. Back it up or move it with an export." />
             <div className="space-y-2 p-5">
-              <Button variant="secondary" className="w-full" onClick={() => { download(`${slug(businessName(project))}.nazare.json`, exportProjectJson(project), "application/json"); toast("Backup downloaded."); }}><Download className="size-4" />Export project backup</Button>
+              <Button variant="secondary" className="w-full" onClick={() => { download(`${slug(businessName(project))}.paideia.json`, exportProjectJson(project), "application/json"); toast("Backup downloaded."); }}><Download className="size-4" />Export project backup</Button>
               <Button variant="danger" className="w-full" onClick={() => setConfirmDelete(true)}><Trash2 className="size-4" />Delete this business</Button>
             </div>
           </Card>
         </div>
       </div>
 
-      <ConfirmModal open={confirmRegen} onClose={() => setConfirmRegen(false)} title="Regenerate the blueprint?" confirmLabel="Regenerate" body="All eight sections will be rewritten with your updated profile. Current versions, including edits, remain in each section's history." onConfirm={() => { generateBlueprint(project.id, false); toast("Regenerating your blueprint…", "info"); }} />
+      <ConfirmModal open={confirmRegen} onClose={() => setConfirmRegen(false)} title="Rewrite your business plan?" confirmLabel="Regenerate" body="All eight sections will be rewritten with your updated profile. Current versions, including edits, remain in each section's history." onConfirm={() => { generateBlueprint(project.id, false); toast("Rewriting your business plan…", "info"); }} />
       <ConfirmModal open={confirmDelete} onClose={() => setConfirmDelete(false)} title={`Delete ${businessName(project)}?`} body="This permanently deletes the plan, financial model, assets, research and tasks from this browser." onConfirm={() => { deleteProject(project.id); router.push("/"); }} />
     </div>
   );

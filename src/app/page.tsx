@@ -1,16 +1,18 @@
 "use client";
 
-import { ArrowRight, BarChart3, Compass, Download, FileUp, LayoutGrid, Megaphone, MoreHorizontal, Plus, Route, Trash2 } from "lucide-react";
+import { ArrowRight, BarChart3, Compass, Download, FileUp, Megaphone, MessageSquareText, MoreHorizontal, Plus, Sparkles, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Logo } from "@/components/logo";
 import { AiStatusBadge } from "@/components/status-badge";
 import { useToast } from "@/components/toast";
 import { Badge, ButtonLink, Button, Card, ConfirmModal, ProgressBar, Skeleton } from "@/components/ui";
 import { brand } from "@/config/brand";
-import { download, slug } from "@/lib/client";
+import { download, generateBlueprint, slug } from "@/lib/client";
+import { profileSchema, type Profile } from "@/lib/schemas";
 import { businessName, completion, isDemo } from "@/lib/project";
-import { deleteProject, exportProjectJson, importProjectJson, useHydrated, useProjects } from "@/lib/store";
+import { createProject, deleteProject, exportProjectJson, importProjectJson, useHydrated, useProjects } from "@/lib/store";
 import type { Project } from "@/lib/types";
 
 export default function Home() {
@@ -54,6 +56,7 @@ export default function Home() {
                 <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">Your businesses</h1>
                 <p className="mt-1 text-sm text-slate-500">{projects.length} project{projects.length > 1 ? "s" : ""} · saved in this browser</p>
               </div>
+              <ExampleButton />
             </div>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
@@ -67,6 +70,11 @@ export default function Home() {
       </main>
     </div>
   );
+}
+
+function ExampleButton() {
+  const startExample = useStartExample();
+  return <Button variant="secondary" size="sm" onClick={startExample}><Sparkles className="size-4" />Try an example</Button>;
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
@@ -83,7 +91,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           <button onClick={() => setMenu((m) => !m)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Project actions"><MoreHorizontal className="size-5" /></button>
           {menu && (
             <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-line bg-white p-1 shadow-lg" onMouseLeave={() => setMenu(false)}>
-              <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-slate-700 hover:bg-slate-50" onClick={() => { download(`${slug(name)}.nazare.json`, exportProjectJson(project), "application/json"); setMenu(false); toast("Project backup downloaded."); }}><Download className="size-4" />Export backup</button>
+              <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-slate-700 hover:bg-slate-50" onClick={() => { download(`${slug(name)}.paideia.json`, exportProjectJson(project), "application/json"); setMenu(false); toast("Project backup downloaded."); }}><Download className="size-4" />Export backup</button>
               <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-rose-600 hover:bg-rose-50" onClick={() => { setConfirm(true); setMenu(false); }}><Trash2 className="size-4" />Delete</button>
             </div>
           )}
@@ -96,7 +104,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       <div className="mt-4 flex flex-wrap items-center gap-1.5">
         <Badge>{project.profile.stage}</Badge>
         {project.profile.industry && <Badge>{project.profile.industry}</Badge>}
-        {isDemo(project) && <Badge tone="amber">Sample content</Badge>}
+        {isDemo(project) && <Badge tone="amber">Template drafts</Badge>}
       </div>
       <div className="mt-4 border-t border-line pt-3">
         <div className="mb-1.5 flex justify-between text-xs text-slate-500"><span>Plan progress</span><span className="tabular-nums">{overall}%</span></div>
@@ -107,35 +115,61 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   );
 }
 
+const EXAMPLE: Profile = profileSchema.parse({
+  idea: "A weekend bakery stand selling homemade cookies and cupcakes at the local farmers market, with custom orders for birthdays.",
+  name: "Sweet Crumbs",
+  offering: "Homemade cookies, cupcakes and custom birthday orders",
+  industry: "Food & bakery",
+  businessModel: "Per-item sales plus custom orders",
+  audience: "Families and teens shopping at the Saturday farmers market",
+  location: "Local farmers market",
+  stage: "Idea",
+  capital: "$500",
+  pricing: "$3 per cookie, $25 per dozen cupcakes",
+  goals: "Sell out every Saturday and take 4 custom orders a month",
+  team: "Two students, weekends only",
+  constraints: "Must follow local food-sale rules",
+});
+
+function useStartExample() {
+  const router = useRouter();
+  return () => {
+    const p = createProject(EXAMPLE);
+    void generateBlueprint(p.id);
+    router.push(`/b/${p.id}`);
+  };
+}
+
 function Welcome() {
+  const startExample = useStartExample();
   const features = [
-    { icon: Compass, title: "Business blueprint", text: "An eight-section plan — market, competition, execution, marketing, finance and risk — built from your own words." },
-    { icon: BarChart3, title: "Live financial model", text: "Edit prices, volumes and costs; projections, break-even and funding needs recalculate instantly." },
-    { icon: Megaphone, title: "Marketing studio", text: "On-brand posts, ads, emails, scripts and creative briefs for every platform." },
-    { icon: Route, title: "Launch roadmap", text: "Your plan becomes prioritized tasks with deadlines, dependencies and a readiness checklist." },
+    { icon: Compass, title: "Business Plan", text: "A full plan — customers, competitors, marketing, money and risks — written from your own words." },
+    { icon: BarChart3, title: "Money", text: "Change your price or costs and instantly see profit, break-even and how much money you need." },
+    { icon: Megaphone, title: "Ad Creator", text: "Ready-to-post ads, social posts, video scripts and emails — with images you can download." },
+    { icon: MessageSquareText, title: "Advisor", text: "Ask questions about your business and get answers based on your own plan and numbers." },
   ];
   return (
     <div className="fade-up">
-      <section className="relative overflow-hidden rounded-2xl bg-ink-900 px-6 py-12 text-white sm:px-12 sm:py-16">
-        <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.15] invert" />
-        <svg className="pointer-events-none absolute -bottom-6 right-0 w-[640px] max-w-none opacity-30" viewBox="0 0 640 160" fill="none" aria-hidden>
-          <path d="M0 120c80 0 100-80 190-80 70 0 80 60 150 60 60 0 80-40 150-40 70 0 110 30 150 30" stroke="#33cab4" strokeWidth="2" />
-          <path d="M0 140c80 0 110-60 200-60 70 0 80 50 150 50 60 0 80-30 150-30 70 0 100 20 140 20" stroke="#33cab4" strokeOpacity=".5" strokeWidth="2" />
-        </svg>
-        <div className="relative max-w-2xl">
-          <Badge tone="ink" className="bg-white/10 text-wave-200"><LayoutGrid className="size-3.5" />Entrepreneur command center</Badge>
-          <h1 className="mt-5 font-display text-3xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">Turn your idea into a business you can actually launch.</h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">{brand.description} No MBA required — plain-English guidance, honest feedback, and numbers you control.</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <ButtonLink href="/new" size="lg" className="bg-wave-400 text-ink-950 hover:bg-wave-300">Start with your idea<ArrowRight className="size-4" /></ButtonLink>
-            <span className="text-sm text-slate-400">Takes about 2 minutes</span>
+      <section className="relative overflow-hidden rounded-2xl bg-ink-900 px-6 py-12 text-white sm:px-12 sm:py-14">
+        <div className="brand-pattern pointer-events-none absolute inset-0" />
+        <div className="relative grid items-center gap-10 lg:grid-cols-[1fr_380px]">
+          <div className="max-w-2xl">
+            <h1 className="font-display text-3xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">Turn your idea into a real business plan.</h1>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">{brand.description}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <ButtonLink href="/new" size="lg" className="bg-gold-400 text-ink-950 hover:bg-gold-300">Start with your idea<ArrowRight className="size-4" /></ButtonLink>
+              <Button size="lg" variant="ghost" className="text-white hover:bg-white/10 hover:text-white" onClick={startExample}><Sparkles className="size-4" />Try an example</Button>
+            </div>
+            <p className="mt-3 text-sm text-white/60">Takes about 2 minutes. No business experience needed.</p>
           </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand artwork */}
+          <img src="/brand/paideia-logo.png" alt="Paideia" className="hidden w-full lg:block" />
         </div>
       </section>
       <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((f) => (
           <Card key={f.title} className="p-5">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-wave-50 text-wave-700"><f.icon className="size-5" /></div>
+            <div className="flex size-9 items-center justify-center rounded-lg bg-gold-50 text-ink-900"><f.icon className="size-5" /></div>
             <h3 className="mt-4 font-display text-[15px] font-semibold text-slate-900">{f.title}</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{f.text}</p>
           </Card>

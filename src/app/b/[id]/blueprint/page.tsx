@@ -13,7 +13,7 @@ import { businessName, currentVersion, projectionFor, withRestoredVersion, withS
 import { SECTIONS, sectionSchemas, type SectionData, type SectionKey } from "@/lib/schemas";
 import { updateProject } from "@/lib/store";
 
-const sourceLabel = { ai: "AI generated", demo: "Sample content", edit: "Edited by you", restore: "Restored" } as const;
+const sourceLabel = { ai: "AI generated", demo: "Template draft", edit: "Edited by you", restore: "Restored" } as const;
 
 export default function BlueprintPage() {
   const { project } = useWorkspace();
@@ -23,7 +23,7 @@ export default function BlueprintPage() {
   const name = businessName(project);
 
   const downloadMd = () => {
-    const md = [`# ${name} — Business Blueprint`, ""];
+    const md = [`# ${name} — Business Plan`, ""];
     for (const s of SECTIONS) {
       const v = currentVersion(project, s.key);
       if (v) md.push(`## ${s.letter}. ${s.title}`, "", toMarkdown(v.data), "");
@@ -34,13 +34,13 @@ export default function BlueprintPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Business blueprint"
-        title="Your plan, section by section"
+        eyebrow="Business plan"
+        title="Your business plan"
         description="Every section is generated from your business profile. Edit anything, regenerate a single section with instructions, or restore an earlier version — other sections are never touched."
         actions={
           <>
             {missing > 0 ? (
-              <Button onClick={() => generateBlueprint(project.id)} loading={generating.length > 0}><Sparkles className="size-4" />{missing === SECTIONS.length ? "Generate blueprint" : `Generate ${missing} missing`}</Button>
+              <Button onClick={() => generateBlueprint(project.id)} loading={generating.length > 0}><Sparkles className="size-4" />{missing === SECTIONS.length ? "Create my business plan" : `Create ${missing} missing`}</Button>
             ) : (
               <Button variant="secondary" onClick={() => setConfirmAll(true)} disabled={generating.length > 0}><RefreshCw className="size-4" />Regenerate all</Button>
             )}
@@ -70,7 +70,7 @@ export default function BlueprintPage() {
           {SECTIONS.map((s) => <SectionCard key={s.key} sectionKey={s.key} />)}
         </div>
       </div>
-      <ConfirmModal open={confirmAll} onClose={() => setConfirmAll(false)} title="Regenerate every section?" confirmLabel="Regenerate all" body="Each section gets a new version. Your current versions — including your edits — stay in each section's history and can be restored. Roadmap tasks you created or started are kept." onConfirm={() => generateBlueprint(project.id, false)} />
+      <ConfirmModal open={confirmAll} onClose={() => setConfirmAll(false)} title="Regenerate every section?" confirmLabel="Regenerate all" body="Each section gets a new version. Your current versions — including your edits — stay in each section's history and can be restored. Tasks you created or started are kept." onConfirm={() => generateBlueprint(project.id, false)} />
     </div>
   );
 }

@@ -5,7 +5,8 @@ import { AiError } from "./ai";
 /** Very small in-memory rate limiter to protect the API key on a shared deployment. */
 const hits = new Map<string, number[]>();
 const WINDOW_MS = 60_000;
-const LIMIT = Number(process.env.NAZARE_RATE_LIMIT_PER_MIN || 30);
+// A whole class often shares one school IP, so the default is generous.
+const LIMIT = Number(process.env.PAIDEIA_RATE_LIMIT_PER_MIN || process.env.NAZARE_RATE_LIMIT_PER_MIN || 150);
 
 export function rateLimited(request: Request): boolean {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";

@@ -41,7 +41,7 @@ const initial: Draft = {
   unknowns: [],
 };
 
-const STEPS = ["Your idea", "The essentials", "A few more details", "Quick questions"];
+const STEPS = ["Your idea", "The basics", "Quick questions"];
 
 export default function NewBusiness() {
   const router = useRouter();
@@ -71,8 +71,8 @@ export default function NewBusiness() {
   };
 
   const next = () => {
-    if (step === 2 && !followups) loadQuestions();
-    setStep((s) => Math.min(3, s + 1));
+    if (step === 1 && !followups) loadQuestions();
+    setStep((s) => Math.min(2, s + 1));
   };
 
   const finish = () => {
@@ -94,10 +94,10 @@ export default function NewBusiness() {
       </header>
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
-        <ol className="mb-8 grid grid-cols-4 gap-2" aria-label="Progress">
+        <ol className="mb-8 grid grid-cols-3 gap-2" aria-label="Progress">
           {STEPS.map((s, i) => (
             <li key={s}>
-              <div className={clsx("h-1 rounded-full transition-colors", i <= step ? "bg-wave-500" : "bg-slate-200")} />
+              <div className={clsx("h-1 rounded-full transition-colors", i <= step ? "bg-gold-400" : "bg-slate-200")} />
               <div className={clsx("mt-2 hidden text-xs font-medium sm:block", i === step ? "text-slate-900" : "text-slate-400")}>{s}</div>
             </li>
           ))}
@@ -122,7 +122,7 @@ export default function NewBusiness() {
 
         {step === 1 && (
           <div className="fade-up space-y-7">
-            <StepTitle title="The essentials" text="Five quick answers. Not sure about something? Choose “I don't know yet” and we'll suggest a starting assumption." />
+            <StepTitle title="The basics" text="A few quick answers. Not sure? Tap “I don't know yet” and we'll suggest something sensible." />
             <div>
               <span className="mb-2 block text-sm font-medium text-slate-800">Where are you today?</span>
               <div className="flex flex-wrap gap-2">
@@ -145,9 +145,10 @@ export default function NewBusiness() {
           </div>
         )}
 
-        {step === 2 && (
-          <div className="fade-up space-y-6">
-            <StepTitle title="A few more details" text="All optional — skip anything. You can complete your profile later and regenerate any section." />
+        {step === 1 && (
+          <details className="mt-7 rounded-xl border border-line bg-white p-4">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-800">More details <span className="font-normal text-slate-500">(optional)</span></summary>
+            <div className="mt-5 space-y-6">
             <div className="grid gap-5 sm:grid-cols-2">
               <Unknowable field="industry" label="Industry" placeholder="e.g. Pet services" draft={draft} set={set} toggle={toggleUnknown} />
               <Unknowable field="businessModel" label="Business model" placeholder="e.g. Subscription, per-service, marketplace" draft={draft} set={set} toggle={toggleUnknown} />
@@ -160,12 +161,13 @@ export default function NewBusiness() {
             </div>
             <Unknowable field="goals" label="What are your goals for the next year?" placeholder="e.g. Replace my salary, reach 100 customers" draft={draft} set={set} toggle={toggleUnknown} textarea />
             <Unknowable field="constraints" label="Any constraints?" placeholder="e.g. Can only work evenings, no debt, must launch by June" draft={draft} set={set} toggle={toggleUnknown} textarea />
-          </div>
+            </div>
+          </details>
         )}
 
-        {step === 3 && (
+        {step === 2 && (
           <div className="fade-up space-y-6">
-            <StepTitle title="A few questions from your strategist" text="Answer what you can — these sharpen the plan. Everything is optional." />
+            <StepTitle title="A few quick questions" text="Answer what you can to make the plan sharper — or skip straight to your plan." />
             {loadingQs && <div className="space-y-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)}</div>}
             {qError && <ErrorNotice message={qError} onRetry={loadQuestions} />}
             {followups?.map((q, i) => (
@@ -190,8 +192,8 @@ export default function NewBusiness() {
             <Link href="/" className="text-sm text-slate-500 hover:text-slate-800">Cancel</Link>
           )}
           <div className="flex items-center gap-2">
-            {step === 2 && <Button variant="ghost" onClick={next}>Skip</Button>}
-            {step < 3 ? (
+            {step === 2 && <Button variant="ghost" onClick={finish} disabled={creating}>Skip</Button>}
+            {step < 2 ? (
               <Button size="lg" onClick={next} disabled={!ideaValid}>Continue<ArrowRight className="size-4" /></Button>
             ) : (
               <Button size="lg" onClick={finish} loading={creating} disabled={loadingQs}><Sparkles className="size-4" />Build my blueprint</Button>

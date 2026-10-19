@@ -130,7 +130,7 @@ export function completion(p: Project) {
   const checklistItems = sectionData(p, "execution")?.launchChecklist ?? [];
   const checked = checklistItems.filter((i) => p.checklist[i]).length;
   const parts = [
-    { label: "Blueprint", done: sections, total: SECTIONS.length },
+    { label: "Business plan", done: sections, total: SECTIONS.length },
     { label: "Tasks", done: tasksDone, total: p.tasks.length },
     { label: "Launch checklist", done: checked, total: checklistItems.length },
   ];
@@ -145,7 +145,7 @@ export function recommendations(p: Project, base: string, researchAvailable: boo
   const out: Recommendation[] = [];
   const missing = SECTIONS.filter((s) => !p.sections[s.key]);
   if (missing.length === SECTIONS.length) {
-    out.push({ title: "Generate your business blueprint", detail: "Turn your profile into an eight-section plan.", href: `${base}/blueprint`, tone: "wave" });
+    out.push({ title: "Create your business plan", detail: "Turn your answers into an eight-section plan.", href: `${base}/blueprint`, tone: "wave" });
     return out;
   }
   const t = today();
@@ -168,7 +168,7 @@ export function recommendations(p: Project, base: string, researchAvailable: boo
   if (missing.length) out.push({ title: `Complete ${missing.length} remaining section${missing.length > 1 ? "s" : ""}`, detail: missing.map((s) => s.title).join(", "), href: `${base}/blueprint`, tone: "wave" });
   if (researchAvailable && p.research.runs.length === 0)
     out.push({ title: "Verify the market with live research", detail: "Find sourced data on competitors, pricing and demand.", href: `${base}/research`, tone: "sky" });
-  if (p.assets.length === 0) out.push({ title: "Create your first launch content", detail: "Generate posts, ads or emails in the Marketing Studio.", href: `${base}/marketing`, tone: "wave" });
+  if (p.assets.length === 0) out.push({ title: "Create your first launch content", detail: "Make posts, ads or emails in the Ad Creator.", href: `${base}/marketing`, tone: "wave" });
   const next = p.tasks.filter((x) => x.status === "todo" && !taskIsLocked(x, p.tasks)).sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0];
   if (next) out.push({ title: `Next up: ${next.title}`, detail: `Due ${formatDate(next.dueDate)} · ${next.stage}`, href: `${base}/roadmap`, tone: "wave" });
   if (p.profile.unknowns.length)

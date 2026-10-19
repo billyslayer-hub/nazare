@@ -293,7 +293,7 @@ function Execution({ d }: { d: SectionData["execution"] }) {
         <Block title="Suppliers & resources"><BulletList items={d.suppliersAndResources} /></Block>
         <Block title="Dependencies & risks"><BulletList items={d.dependencies} /></Block>
       </Grid>
-      <Callout>{d.tasks.length} tasks and {d.launchChecklist.length} launch-readiness checks from this plan are tracked in the Roadmap, where you can edit them, set status and adjust deadlines.</Callout>
+      <Callout>{d.tasks.length} tasks and {d.launchChecklist.length} launch-readiness checks from this plan are on the Tasks page, where you can edit them, set status and adjust deadlines.</Callout>
     </div>
   );
 }
@@ -313,7 +313,7 @@ function Marketing({ d, currency }: { d: SectionData["marketing"]; currency: str
           {d.personas.map((p, i) => (
             <Tile key={i}>
               <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-full bg-ink-900 text-sm font-semibold text-white">{p.name.replace(/^Sample persona:\s*/, "").charAt(0)}</div>
+                <div className="flex size-9 items-center justify-center rounded-full bg-ink-900 text-sm font-semibold text-white">{p.name.charAt(0)}</div>
                 <div><div className="text-sm font-semibold text-slate-900">{p.name}</div><div className="text-xs text-slate-500">{p.occupation} · {p.age}</div></div>
               </div>
               <p className="mt-3 text-sm italic text-slate-600">{p.quote}</p>
@@ -419,7 +419,7 @@ function Financials({ d, currency, projection }: { d: SectionData["financials"];
           <Prose className="mt-3 text-slate-600">{d.unitEconomics.notes}</Prose>
         </Tile>
         <Tile title={`Funding: ${d.fundingStrategy.instrument}`}>
-          <div className="flex h-2.5 overflow-hidden rounded-full">{d.fundingStrategy.useOfFunds.map((u, i) => <div key={i} style={{ width: `${u.pct}%`, background: ["#0b8c7f", "#33cab4", "#1f3266", "#a4f0e0", "#94a3b8"][i % 5] }} />)}</div>
+          <div className="flex h-2.5 overflow-hidden rounded-full">{d.fundingStrategy.useOfFunds.map((u, i) => <div key={i} style={{ width: `${u.pct}%`, background: ["#912f30", "#d99a57", "#344840", "#e5b682", "#94a3b8"][i % 5] }} />)}</div>
           <ul className="mt-2 space-y-0.5 text-xs text-slate-600">{d.fundingStrategy.useOfFunds.map((u, i) => <li key={i} className="flex justify-between"><span>{u.category}</span><span className="tabular-nums">{u.pct}%</span></li>)}</ul>
           <Prose className="mt-2 text-slate-600">{d.fundingStrategy.rationale}</Prose>
           {projection && <p className="mt-2 text-xs font-medium text-slate-700">Computed funding gap: {projection.fundingGap > 0 ? money(projection.fundingGap, currency) : "none — cash stays positive"}</p>}

@@ -5,8 +5,13 @@ import { toStructuredSchema } from "./json-schema";
 import { ADVISOR_SYSTEM, SYSTEM_PROMPT, researchPrompt, synthesisPrompt } from "./prompts";
 import { researchSynthesisSchema, type Profile, type ResearchResult, type ResearchSource } from "./schemas";
 
-export const MODEL = process.env.NAZARE_MODEL || "claude-opus-5-5";
+// Sonnet 5.5: fast and affordable for classroom use. Set PAIDEIA_MODEL=claude-opus-5-5 for the highest quality, or claude-haiku-5-5 for the lowest cost.
+export const MODEL = process.env.PAIDEIA_MODEL || process.env.NAZARE_MODEL || "claude-sonnet-5-5";
 const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+
+/** Server-side refusal fallbacks ("default" mode) exist only on these models; Haiku does not accept the parameter. */
+const SUPPORTS_FALLBACK = /^claude-(opus-5|fable-5|sonnet-5-5)/.test(MODEL);
+const fallbackParams: Pick<Anthropic.Beta.MessageCreateParams, "betas" | "fallbacks"> = SUPPORTS_FALLBACK ? { betas: [FALLBACK_BETA], fallbacks: "default" } : {};
 
 export function aiEnabled(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
@@ -14,7 +19,7 @@ export function aiEnabled(): boolean {
 
 /** Live web research uses Claude's server-side web search tool (on by default when AI is enabled). */
 export function researchEnabled(): boolean {
-  return aiEnabled() && process.env.NAZARE_WEB_RESEARCH !== "off";
+  return aiEnabled() && (process.env.PAIDEIA_WEB_RESEARCH || process.env.NAZARE_WEB_RESEARCH) !== "off";
 }
 
 let client: Anthropic | null = null;
@@ -65,8 +70,7 @@ export async function generateStructured<S extends z.ZodType>(
       .beta.messages.stream({
         model: MODEL,
         max_tokens: 32000,
-        betas: [FALLBACK_BETA],
-        fallbacks: "default",
+        ...fallbackParams,
         output_config: { effort, format: { type: "json_schema", schema: jsonSchema } },
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: prompt }],
@@ -106,8 +110,7 @@ export async function runResearch(profile: Profile, question: string): Promise<R
         .beta.messages.stream({
           model: MODEL,
           max_tokens: 16000,
-          betas: [FALLBACK_BETA],
-          fallbacks: "default",
+          ...fallbackParams,
           output_config: { effort: "medium" },
           system: SYSTEM_PROMPT,
           tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }],
@@ -166,8 +169,7 @@ export function advisorStream(system: string, messages: Anthropic.MessageParam[]
         const stream = anthropic().beta.messages.stream({
           model: MODEL,
           max_tokens: 8000,
-          betas: [FALLBACK_BETA],
-          fallbacks: "default",
+          ...fallbackParams,
           output_config: { effort: "low" },
           system: `${ADVISOR_SYSTEM}\n\n${system}`,
           messages,

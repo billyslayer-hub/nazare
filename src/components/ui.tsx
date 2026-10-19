@@ -27,7 +27,7 @@ const sizes: Record<Size, string> = {
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
   return clsx(
-    "inline-flex shrink-0 items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wave-500 disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex shrink-0 items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400 disabled:cursor-not-allowed disabled:opacity-60",
     variants[variant],
     sizes[size],
     className,
@@ -84,7 +84,7 @@ export function CardHeader({
     <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
       <div className="flex min-w-0 items-start gap-3">
         {icon && (
-          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-wave-50 text-wave-700">
+          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-gold-50 text-ink-900">
             {icon}
           </div>
         )}
@@ -158,7 +158,7 @@ export function BulletList({ items, className }: { items: string[]; className?: 
     <ul className={clsx("space-y-2", className)}>
       {items.map((item, i) => (
         <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-slate-700">
-          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-wave-500" />
+          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-400" />
           <span>{item}</span>
         </li>
       ))}
@@ -190,7 +190,7 @@ export function ScoreRing({ value, size = 88, progress }: { value: number; size?
   const v = Math.max(0, Math.min(100, Math.round(value)));
   const r = (size - 10) / 2;
   const c = 2 * Math.PI * r;
-  const color = progress ? "#14ae9b" : v >= 70 ? "#14ae9b" : v >= 50 ? "#f59e0b" : "#e11d48";
+  const color = progress ? "#d99a57" : v >= 70 ? "#507665" : v >= 50 ? "#d99a57" : "#912f30";
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -220,7 +220,7 @@ export function ProgressBar({ value, className }: { value: number; className?: s
   return (
     <div className={clsx("h-1.5 overflow-hidden rounded-full bg-slate-100", className)}>
       <div
-        className="h-full rounded-full bg-gradient-to-r from-wave-500 to-wave-400 transition-all duration-500"
+        className="h-full rounded-full bg-gold-400 transition-all duration-500"
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
       />
     </div>
@@ -232,7 +232,7 @@ export function ProgressBar({ value, className }: { value: number; className?: s
 /* ------------------------------------------------------------------ */
 
 const control =
-  "w-full rounded-lg border border-line bg-white px-3 text-sm text-slate-900 shadow-sm shadow-slate-900/[0.02] placeholder:text-slate-400 transition-colors focus:border-wave-500 focus:outline-none focus:ring-3 focus:ring-wave-500/15 disabled:bg-slate-50";
+  "w-full rounded-lg border border-line bg-white px-3 text-sm text-slate-900 shadow-sm shadow-slate-900/[0.02] placeholder:text-slate-400 transition-colors focus:border-gold-400 focus:outline-none focus:ring-3 focus:ring-gold-400/20 disabled:bg-slate-50";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input className={clsx(control, "h-10", className)} {...props} />;
@@ -303,7 +303,7 @@ export function ConfirmModal({ open, onClose, onConfirm, title, body, confirmLab
 export function EmptyState({ icon, title, description, action, className }: { icon: ReactNode; title: ReactNode; description: ReactNode; action?: ReactNode; className?: string }) {
   return (
     <div className={clsx("flex flex-col items-center rounded-xl border border-dashed border-slate-300 bg-white/60 px-6 py-12 text-center", className)}>
-      <div className="flex size-11 items-center justify-center rounded-xl bg-wave-50 text-wave-700">{icon}</div>
+      <div className="flex size-11 items-center justify-center rounded-xl bg-gold-50 text-ink-900">{icon}</div>
       <h3 className="mt-4 font-display text-base font-semibold text-slate-900">{title}</h3>
       <p className="mt-1.5 max-w-md text-sm leading-relaxed text-slate-500">{description}</p>
       {action && <div className="mt-5">{action}</div>}

@@ -67,7 +67,7 @@ export default function RoadmapPage() {
   if (tasks.length === 0 && !execution) {
     return (
       <div>
-        <PageHeader eyebrow="Launch roadmap" title="Roadmap & tasks" description="Your plan turned into prioritized tasks with deadlines, dependencies and a launch-readiness checklist." />
+        <PageHeader eyebrow="Tasks" title="Your launch to-do list" description="Your plan turned into prioritized tasks with deadlines, dependencies and a launch-readiness checklist." />
         <EmptyState
           icon={<Route className="size-5" />}
           title="No roadmap yet"
@@ -88,8 +88,8 @@ export default function RoadmapPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Launch roadmap"
-        title="Roadmap & tasks"
+        eyebrow="Tasks"
+        title="Your launch to-do list"
         description="Tasks from your Execution Plan plus anything you add. Regenerating the plan keeps tasks you created or started."
         actions={<Button onClick={() => setEditing({ draft: newDraft() })}><Plus className="size-4" />Add task</Button>}
       />

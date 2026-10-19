@@ -46,7 +46,7 @@ export default function FinancialsPage() {
   if (!finance) {
     return (
       <div>
-        <PageHeader eyebrow="Financial planning" title="Financial model" description="A 36-month model computed in your browser from assumptions you control." />
+        <PageHeader eyebrow="Money" title="Your numbers" description="A 36-month model computed in your browser from assumptions you control." />
         <EmptyState
           icon={<BarChart3 className="size-5" />}
           title="No financial model yet"
@@ -58,7 +58,7 @@ export default function FinancialsPage() {
             </div>
           }
         />
-        {!project.sections.company && <p className="mt-3 text-center text-xs text-slate-500">Generate the Company Description in the Blueprint first to unlock AI assumptions.</p>}
+        {!project.sections.company && <p className="mt-3 text-center text-xs text-slate-500">Generate the Company Description on the Business Plan page first.</p>}
         {job?.status === "error" && <p className="mt-3 text-center text-sm text-rose-600">{job.error}</p>}
       </div>
     );
@@ -68,13 +68,13 @@ export default function FinancialsPage() {
   const proj = runProjection(a);
   const funding = fundingNeed(proj, finance.bufferMonths);
   const proposalPending = Boolean(finance.proposalPending);
-  const sourceBadge = finance.edited ? <Badge tone="sky">Edited by you</Badge> : finance.basis === "demo" ? <Badge tone="amber">Sample assumptions</Badge> : finance.basis === "manual" ? <Badge tone="ink">Your numbers</Badge> : <Badge tone="violet">AI-estimated assumptions</Badge>;
+  const sourceBadge = finance.edited ? <Badge tone="sky">Edited by you</Badge> : finance.basis === "demo" ? <Badge tone="amber">Example numbers</Badge> : finance.basis === "manual" ? <Badge tone="ink">Your numbers</Badge> : <Badge tone="violet">AI-estimated assumptions</Badge>;
 
   return (
     <div>
       <PageHeader
-        eyebrow="Financial planning"
-        title="Financial model"
+        eyebrow="Money"
+        title="Your numbers"
         description="Every figure is calculated from the assumptions below — change any input and the projections, break-even and funding needs update instantly."
         actions={
           <>

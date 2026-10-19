@@ -22,7 +22,7 @@ export default function PlanExport() {
 
   const markdown = () => {
     const md = [`# ${name}`, `## Business Plan`, "", `Prepared ${date} with ${brand.name}.`, ""];
-    if (isDemo(project)) md.push("> Contains sample placeholder content — not real analysis.", "");
+    if (isDemo(project)) md.push("> Contains template drafts written offline — not AI analysis.", "");
     for (const s of available) md.push(`## ${s.letter}. ${s.title}`, "", toMarkdown(currentVersion(project, s.key)!.data), "");
     if (proj) {
       md.push("## Financial Projections (computed)", "", "| | Year 1 | Year 2 | Year 3 |", "|---|---|---|---|");
@@ -78,7 +78,7 @@ export default function PlanExport() {
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500">
             <span>{date}</span><span>Stage: {project.profile.stage}</span>{project.profile.location && <span>{project.profile.location}</span>}
           </div>
-          {isDemo(project) && <Badge tone="amber" className="mt-4">Contains sample placeholder content</Badge>}
+          {isDemo(project) && <Badge tone="amber" className="mt-4">Includes offline template drafts</Badge>}
           <nav className="mt-8">
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Contents</div>
             <ol className="mt-2 grid gap-1 text-sm text-slate-700 sm:grid-cols-2">

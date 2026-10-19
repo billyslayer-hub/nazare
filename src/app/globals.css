@@ -4,24 +4,38 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display-face), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink-950: #050d1c;
-  --color-ink-900: #0a1730;
-  --color-ink-800: #12224a;
-  --color-ink-700: #1f3266;
-  --color-ink-600: #34497f;
+  /* Paideia brand: maroon #912F30 (primary), forest #344840, gold #D99A57 */
+  --color-ink-950: #2b0e0f;
+  --color-ink-900: #912f30;
+  --color-ink-800: #7a2627;
+  --color-ink-700: #a33f3d;
+  --color-ink-600: #b8574f;
 
-  --color-wave-50: #ecfdf9;
-  --color-wave-100: #d0f8ef;
-  --color-wave-200: #a4f0e0;
-  --color-wave-300: #6ce2cd;
-  --color-wave-400: #33cab4;
-  --color-wave-500: #14ae9b;
-  --color-wave-600: #0b8c7f;
-  --color-wave-700: #0d7067;
-  --color-wave-800: #105953;
+  --color-forest-950: #25332d;
+  --color-forest-900: #344840;
+  --color-forest-800: #3e5549;
 
-  --color-surface: #f6f8fb;
-  --color-line: #e4e8ef;
+  --color-gold-50: #fbf4ec;
+  --color-gold-100: #f6e5d0;
+  --color-gold-200: #eecfa9;
+  --color-gold-300: #e5b682;
+  --color-gold-400: #d99a57;
+  --color-gold-500: #c3813d;
+  --color-gold-600: #9f652b;
+
+  /* "wave" is the supporting accent scale (success, links, progress), built from forest green */
+  --color-wave-50: #eff4f1;
+  --color-wave-100: #dde8e2;
+  --color-wave-200: #bcd0c5;
+  --color-wave-300: #93b2a3;
+  --color-wave-400: #6b917f;
+  --color-wave-500: #507665;
+  --color-wave-600: #406253;
+  --color-wave-700: #344840;
+  --color-wave-800: #2a3a33;
+
+  --color-surface: #faf7f2;
+  --color-line: #ebe3d8;
 }
 
 :root {
@@ -35,7 +49,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-wave-200);
+  background: var(--color-gold-200);
 }
 
 @keyframes shimmer {
@@ -47,7 +61,7 @@ body {
 .shimmer {
   position: relative;
   overflow: hidden;
-  background: #eef1f6;
+  background: #f1ebe3;
 }
 .shimmer::after {
   content: "";
@@ -56,6 +70,14 @@ body {
   transform: translateX(-100%);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
   animation: shimmer 1.4s infinite;
+}
+
+/* Flower texture from the Paideia logo artwork, for maroon surfaces */
+.brand-pattern {
+  background-image: url("/brand/pattern.png");
+  background-size: 640px auto;
+  background-repeat: repeat;
+  opacity: 0.28;
 }
 
 .bg-grid {
