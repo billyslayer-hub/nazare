@@ -33,6 +33,7 @@ Other scripts: `npm run build`, `npm start`, `npm run lint`, `npm run typecheck`
 | Variable | Required | Purpose |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | For AI features | Blueprint generation, follow-up questions, marketing studio, live web research, Business Advisor |
+| `ANTHROPIC_WORKSPACE_ID` | Only for keys not created inside a workspace | Workspace ID (`wrkspc_…`) sent as the `anthropic-workspace-id` header |
 | `PAIDEIA_MODEL` | No | Claude model ID. Default `claude-sonnet-5-5` (fast, roughly $0.30–0.80 per full plan); `claude-haiku-5-5` costs a few cents per plan; `claude-opus-5-5` is highest quality (~$1–3) |
 | `PAIDEIA_WEB_RESEARCH` | No | Set `off` to disable web research |
 | `PAIDEIA_RATE_LIMIT_PER_MIN` | No | Per-IP limit on AI routes (default 150) |

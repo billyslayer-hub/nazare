@@ -23,7 +23,10 @@ export function researchEnabled(): boolean {
 }
 
 let client: Anthropic | null = null;
-const anthropic = () => (client ??= new Anthropic());
+// Keys created outside a workspace need the workspace named on every request.
+const WORKSPACE_ID = process.env.ANTHROPIC_WORKSPACE_ID?.trim();
+const anthropic = () =>
+  (client ??= new Anthropic(WORKSPACE_ID ? { defaultHeaders: { "anthropic-workspace-id": WORKSPACE_ID } } : {}));
 
 export class AiError extends Error {
   constructor(
@@ -39,7 +42,10 @@ function toAiError(error: unknown): AiError {
   if (error instanceof Anthropic.AuthenticationError) return new AiError("The Anthropic API key was rejected. Check ANTHROPIC_API_KEY.", 401);
   if (error instanceof Anthropic.PermissionDeniedError) return new AiError("This API key does not have access to the configured model.", 403);
   if (error instanceof Anthropic.RateLimitError) return new AiError("The AI service is rate limited right now. Try again in a minute.", 429);
-  if (error instanceof Anthropic.BadRequestError) return new AiError(`The AI request was rejected: ${error.message}`, 400);
+  if (error instanceof Anthropic.BadRequestError) {
+    if (/workspace/i.test(error.message)) return new AiError("This API key isn't linked to a workspace. Create the key inside a workspace in the Anthropic Console, or set ANTHROPIC_WORKSPACE_ID.", 400);
+    return new AiError(`The AI request was rejected: ${error.message}`, 400);
+  }
   if (error instanceof Anthropic.APIConnectionError) return new AiError("Could not reach the AI service. Check the server's network connection.", 502);
   if (error instanceof Anthropic.APIError) return new AiError(`The AI service returned an error (${error.status ?? "unknown"}). Try again.`, 502);
   console.error("[ai]", error);
